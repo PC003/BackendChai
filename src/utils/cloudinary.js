@@ -2,6 +2,11 @@ import {v2 as cloudinary} from "cloudinary"
 
 import fs from "fs" //file system
 
+cloudinary.config({ 
+        cloud_name: process.env.CLOUDNARY_NAME, 
+        api_key: process.env.CLOUDNARY_API_KEY, 
+        api_secret: process.env.CLOUDNARY_API_SECRET 
+});
 
 const uploadOnCloudinary = async (localFilePath) => {
     try {
@@ -22,8 +27,4 @@ const uploadOnCloudinary = async (localFilePath) => {
 
 }
 
-cloudinary.config({ 
-        cloud_name: process.env.CLOUDNARY_NAME, 
-        api_key: process.env.CLOUDNARY_API_KEY, 
-        api_secret: process.env.CLOUDNARY_API_SECRET 
-});
+export {uploadOnCloudinary}
