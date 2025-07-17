@@ -7,12 +7,9 @@ import {uploadOnCloudinary as upload} from "../utils/cloudinary.js"
 const registerUser = asyncHandler( async (req,res) => {
     //get user details from frontend
 
+   
     const {fullname , email, username, password } = req.body;
-    console.log("email :" , email);
-    console.log("username :" , username);
-    console.log("password :" , password);
-    console.log("fullname :" , fullname);
-
+    
     //validation -not empty
     if(
         [fullname , email, username, password].some( (filed) => filed?.trim() === "")
@@ -32,16 +29,20 @@ const registerUser = asyncHandler( async (req,res) => {
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
+    
+    // console.log(avatarLocalPath); local path is coming
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar file is required")
+    }
+    if(!coverImageLocalPath){
+        throw new ApiError(400, "CoverImage file is required")
     }
     //upload them to cloudinary ,avatar
     const avatar = await upload(avatarLocalPath)
     const coverImage = await upload(coverImageLocalPath)
-
+    
     if(!avatar){
-        throw new ApiError(400, "Avatar file is required")
+        throw new ApiError(400, "Avatar  is required")
     }
     
     
@@ -49,10 +50,10 @@ const registerUser = asyncHandler( async (req,res) => {
     const user = await User.create({
         fullname,
         avatar : avatar.url,
-        coverImgae : coverImage?.url || "",
+        coverImge : coverImage.url || "",
         email,
         password,
-        username: username.toLowerCase()
+        username : username.toLowerCase()
     })
     //remove password and refresh token field from response
 
