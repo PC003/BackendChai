@@ -266,11 +266,77 @@ const updateAccountDetails = asyncHandler(async(req,res)=>{
     .status(200)
     .json(new ApiResponse(200, user, "Account details updated successfully"))
 })
+const updateAvatarDetails = asyncHandler(async(req,res)=>{
+     const avatarLocalPath = req.file?.path
 
+     if (!avatarLocalPath) {
+        throw new ApiError(400,"File upload unsuccessful")
+     }
+
+     //now we upload
+    const avatar = await upload(avatarLocalPath)
+   
+    if(!avatar.url){
+        throw new ApiError(400,"Avatar url issue")
+    }
+    //now goto database and change the user data avatar file url
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:
+            {
+               avatar:avatar.url
+            }
+        },
+        {new: true}
+    ).select("-password")
+    
+     
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200,user,"Avatar uploaded")
+    )
+})
+
+const updateCoverImageDetails = asyncHandler(async(req,res)=>{
+    const coverImageLocalPath = req.file?.path
+
+    if (!coverImageLocalPath) {
+        throw new ApiError(400,"coverimage is required")
+    }
+    //now upload on cloundinary 
+    const coverImage = await upload(coverImageLocalPath)
+
+    if(!coverImage){
+        throw new ApiError(400,"Coverimage upload failed")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                coverImage:coverImage.url
+            }
+        },
+        {new:true}
+    ).select("-password")
+
+    
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200,user,"CoverImage uploaded")
+    )
+})
 export {
     registerUser,
     loginUser,   
     logoutUser,
     refreshAccessToken,
     changeCurrentPassword,
+    updateAvatarDetails,
+    updateAccountDetails,
+    updateCoverImageDetails
 }
